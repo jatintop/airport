@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airport Scheduler</title>
+    <link rel="icon" href="images/favicon1.png" type="image/png">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
+<body>
+    
+    <!-- Dialog Box -->
+    <div id="dialog" class="dialog">
+        <div class="dialog-content">
+        <span id="closeDialog" class="close">&times;</span>
+        <h5>Did you Know?</h5>
+        <p>There are around 5000-7000 single-runway airports in the world.</p>
+        </div>
+    </div>
+  
+    <h1>Airport Flight Scheduler</h1>
+    <img src="images/airport.jpg" alt="Airport">
+    <div class="form-container">
+        <h4>Add Flight Details</h4>
+        <form id="flightForm">
+            <label for="weatherSelect">Select Weather:</label>
+            <div class="custom-select-container">
+                <select id="weatherSelect" class="custom-select">
+                    <option value="" disabled selected>Select Weather</option>
+                    <option value="Fog" data-icon="fa-solid fa-smog">Fog</option>
+                    <option value="Thunderstorms" data-icon="fa-bolt">Thunderstorms</option>
+                    <option value="Heavy Rain" data-icon="fa-cloud-showers-heavy">Heavy Rain</option>
+                    <option value="Snow and Ice" data-icon="fa-snowflake">Snow and Ice</option>
+                    <option value="Nominal" data-icon="fa-sun">Nominal</option>
+                </select>
+                <div id="weatherIcon" class="weather-icon">
+                    <i class="fas"></i>
+                </div>
+            </div>
+
+            <div class="flight-entry">
+                <h3>Flight 1</h3>            
+                <select class="type-of-flight">
+                    <option value="" disabled selected>Type of Flight</option>
+                    <option value="International">International</option>
+                    <option value="Domestic">Domestic</option>
+                    <option value="Emergency">Emergency</option>
+                </select>
+            
+                <select class="fuel-requirements">
+                    <option value="" disabled selected>Fuel Requirements</option>
+                    <option value="Nominal">Nominal</option>
+                    <option value="Low">Low</option>
+                </select>
+            
+                <select class="time-schedule">
+                    <option value="" disabled selected>Time Schedule</option>
+                    <option value="On time">On time</option>
+                    <option value="Delayed < 1">Delayed &lt; 1</option>
+                    <option value="Delayed > 1">Delayed &gt; 1</option>
+                    <option value="Delayed > 3">Delayed &gt; 3</option>
+                    <option value="Delayed > 5">Delayed &gt; 5</option>
+                </select>
+            
+                <select class="landing-takeoff">
+                    <option value="" disabled selected>Landing or Take Off</option>
+                    <option value="Landing">Landing</option>
+                    <option value="Take Off">Take Off</option>
+                </select>
+                <input type="number" class="arrival-time" placeholder="Arrival Time" min="0" max="23">
+
+            </div>
+            
+            <div class="flight-entry">
+                <h3>Flight 2</h3>            
+                <select class="type-of-flight">
+                    <option value="" disabled selected>Type of Flight</option>
+                    <option value="International">International</option>
+                    <option value="Domestic">Domestic</option>
+                    <option value="Emergency">Emergency</option>
+                </select>
+            
+                <select class="fuel-requirements">
+                    <option value="" disabled selected>Fuel Requirements</option>
+                    <option value="Nominal">Nominal</option>
+                    <option value="Low">Low</option>
+                </select>
+            
+                <select class="time-schedule">
+                    <option value="" disabled selected>Time Schedule</option>
+                    <option value="On time">On time</option>
+                    <option value="Delayed < 1">Delayed &lt; 1</option>
+                    <option value="Delayed > 1">Delayed &gt; 1</option>
+                    <option value="Delayed > 3">Delayed &gt; 3</option>
+                    <option value="Delayed > 5">Delayed &gt; 5</option>
+                </select>
+
+                <select class="landing-takeoff">
+                    <option value="" disabled selected>Landing or Take Off</option>
+                    <option value="Landing">Landing</option>
+                    <option value="Take Off">Take Off</option>
+                </select>
+                <input type="number" class="arrival-time" placeholder="Arrival Time" min="0" max="23">
+            </div>
+            
+            
+            <div class="flight-entry">
+                <h3>Flight 3</h3>            
+                <select class="type-of-flight">
+                    <option value="" disabled selected>Type of Flight</option>
+                    <option value="International">International</option>
+                    <option value="Domestic">Domestic</option>
+                    <option value="Emergency">Emergency</option>
+                </select>
+            
+                <select class="fuel-requirements">
+                    <option value="" disabled selected>Fuel Requirements</option>
+                    <option value="Nominal">Nominal</option>
+                    <option value="Low">Low</option>
+                </select>
+            
+                <select class="time-schedule">
+                    <option value="" disabled selected>Time Schedule</option>
+                    <option value="On time">On time</option>
+                    <option value="Delayed < 1">Delayed &lt; 1</option>
+                    <option value="Delayed > 1">Delayed &gt; 1</option>
+                    <option value="Delayed > 3">Delayed &gt; 3</option>
+                    <option value="Delayed > 5">Delayed &gt; 5</option>
+                </select>
+
+            
+                <select class="landing-takeoff">
+                    <option value="" disabled selected>Landing or Take Off</option>
+                    <option value="Landing">Landing</option>
+                    <option value="Take Off">Take Off</option>
+                </select>
+
+                <input type="number" class="arrival-time" placeholder="Arrival Time" min="0" max="23">
+
+            </div>
+            
+            <div class="flight-entry">
+                <h3>Flight 4</h3>            
+                <select class="type-of-flight">
+                    <option value="" disabled selected>Type of Flight</option>
+                    <option value="International">International</option>
+                    <option value="Domestic">Domestic</option>
+                    <option value="Emergency">Emergency</option>
+                </select>
+            
+                <select class="fuel-requirements">
+                    <option value="" disabled selected>Fuel Requirements</option>
+                    <option value="Nominal">Nominal</option>
+                    <option value="Low">Low</option>
+                </select>
+            
+                <select class="time-schedule">
+                    <option value="" disabled selected>Time Schedule</option>
+                    <option value="On time">On time</option>
+                    <option value="Delayed < 1">Delayed &lt; 1</option>
+                    <option value="Delayed > 1">Delayed &gt; 1</option>
+                    <option value="Delayed > 3">Delayed &gt; 3</option>
+                    <option value="Delayed > 5">Delayed &gt; 5</option>
+                </select>
+
+            
+                <select class="landing-takeoff">
+                    <option value="" disabled selected>Landing or Take Off</option>
+                    <option value="Landing">Landing</option>
+                    <option value="Take Off">Take Off</option>
+                </select>
+                <input type="number" class="arrival-time" placeholder="Arrival Time" min="0" max="23">
+
+            </div>
+            
+            
+            <div class="flight-entry">
+                <h3>Flight 5</h3>
+            
+                <select class="type-of-flight">
+                    <option value="" disabled selected>Type of Flight</option>
+                    <option value="International">International</option>
+                    <option value="Domestic">Domestic</option>
+                    <option value="Emergency">Emergency</option>
+                </select>
+            
+                <select class="fuel-requirements">
+                    <option value="" disabled selected>Fuel Requirements</option>
+                    <option value="Nominal">Nominal</option>
+                    <option value="Low">Low</option>
+                </select>
+            
+                <select class="time-schedule">
+                    <option value="" disabled selected>Time Schedule</option>
+                    <option value="On time">On time</option>
+                    <option value="Delayed < 1">Delayed &lt; 1</option>
+                    <option value="Delayed > 1">Delayed &gt; 1</option>
+                    <option value="Delayed > 3">Delayed &gt; 3</option>
+                    <option value="Delayed > 5">Delayed &gt; 5</option>
+                </select>
+
+                <select class="landing-takeoff">
+                    <option value="" disabled selected>Landing or Take Off</option>
+                    <option value="Landing">Landing</option>
+                    <option value="Take Off">Take Off</option>
+                </select>
+                <input type="number" class="arrival-time" placeholder="Arrival Time" min="0" max="23">
+
+            </div>
+            
+
+            <button type="button" id="scheduleButton">Schedule Flights</button>
+        </form>
+    </div>
+    
+    <div class="table-container hidden" id="scheduleContainer">
+        <h6>Flight Schedule</h6>
+        <table id="scheduleTable">
+            <thead>
+                <tr>
+                    <th>Flight Number</th>
+                    <th>Arrival Time</th>
+                    <th>Type of Flight</th>
+                    <th>Fuel Requirements</th>
+                    <th>Time Schedule</th>
+                    <th>Landing/Take Off</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-container2 hidden" id="technicalContainer">
+        <h6>Technical Flight Schedule</h6>
+        <table id="technicalTable">
+            <thead>
+                <tr>
+                    <th>Process ID</th>
+                    <th>Arrival Time</th>
+                    <th>Burst Time</th>
+                    <th>Priority</th>
+                    <th>Completion Time</th>
+                    <th>Waiting Time</th>
+                    <th>Turnaround Time</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+    
+    <script src="script.js"></script>
+
+    <footer class="custom-footer">
+        Designed & Developed by Jatin Topakar | Christ (Deemed to be University). All rights reserved &copy; 2024.
+    </footer>    
+</body>
+</html>

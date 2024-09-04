@@ -1,0 +1,288 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #333;
+    margin: 0;
+    padding: 0;
+    background-size: contain; /* Ensures the entire GIF is shown */
+    background-repeat: no-repeat; /* Avoids tiling of the background */
+    background-position: center; /* Centers the GIF in the viewport */
+    background-attachment: fixed; /* Keeps the background fixed while scrolling */
+}
+
+h1 {
+    text-align: center;
+    font-size: 2.5em;
+    color: whitesmoke;
+    margin-bottom: 30px;
+}
+
+h2 {
+    text-align: center;
+    font-size: 1.2em;
+    color: whitesmoke;
+    margin-top: 0;
+    margin-bottom: 60px;
+}
+
+h4 {
+    text-align: center;
+    font-size: 2em;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+h5 {
+    margin-top: 3%;
+    text-align: center;
+    font-size: 1em;
+    color: #333;
+}
+
+h6 {
+    text-align: center;
+    font-size: 2em;
+    color: whitesmoke;
+    margin-bottom: 30px;
+}
+
+img {
+    max-width: 45%;
+    max-height: 20%;
+    border-radius: 20px;
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 60px;
+}
+
+.form-container {
+    margin: 20px auto;
+    max-width: 1000px;
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 30px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 100px;
+    padding-bottom: 60px;
+}
+
+.form-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+.flight-entry {
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.flight-entry h3 {
+    flex-basis: 100%;
+    font-size: 1.5em;
+    color: #25a18e;
+    border-bottom: 2px solid #25a18e;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+}
+
+input, select {
+    flex-grow: 1;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="number"] {
+    flex-grow: 2;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus, select:focus {
+    border-color: #25a18e;
+    box-shadow: 0 0 5px rgba(37, 161, 142, 0.5);
+}
+
+#scheduleButton {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    margin-top: 40px;
+    background-color: #25a18e;
+    color: white;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#scheduleButton:hover {
+    background-color: #166854;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(37, 161, 142, 0.3);
+}
+
+.table-container {
+    margin: 100px auto;
+    max-width: 1075px;
+    padding: 0 20px;
+}
+
+.table-container2 {
+    margin: 100px auto;
+    max-width: 1080px;
+    padding: 0 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 15px;
+    text-align: left;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+thead {
+    background-color: #25a18e;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+tbody tr:hover td {
+    color: #25a18e;
+}
+
+tbody tr td {
+    transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+
+tbody tr:hover td {
+    transform: scale(1.05); 
+    background-color: #e8f5f5;
+    color: #1d9a8f;
+}
+
+#scheduleTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#scheduleTable th, #scheduleTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+  
+
+.hidden {
+    display: none;
+  } 
+
+
+.custom-select-container {
+    position: relative;
+    display: inline-block;
+    width: 250px; 
+}
+
+.custom-select {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    appearance: none;
+    background-color: #fff;
+    background-image: none;
+    cursor: pointer;
+}
+
+.weather-icon {
+    position: absolute;
+    top: 44%;
+    right: 15px;
+    transform: translateY(-50%);
+    font-size: 24px;
+    color: #333;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.custom-select-container .custom-select:focus + .weather-icon,
+.custom-select-container .custom-select:hover + .weather-icon {
+    opacity: 0.5;
+}
+
+.custom-footer {
+    background-color: #166854; 
+    color: #ffffff;
+    text-align: center;
+    padding: 10px 0;
+    align-content: center;
+    font-family: 'Roboto', sans-serif; 
+    font-size: 14px;
+    bottom: 0;
+    width: 100%;
+    height: 50px;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Dialog Box Styles */
+.dialog {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    opacity: 90%;
+    width: 300px;
+    color: white;
+    background: #1d9a8f;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    z-index: 1000;
+    display: none; /* Hidden by default */
+  }
+  
+  .dialog-content {
+    padding: 15px;
+    color: white;
+  }
+  
+  .close {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    font-size: 22px;
+    cursor: pointer;
+    color: white;
+  }
+  
+  .close:hover {
+    color: yellow;
+  }
+  
