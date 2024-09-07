@@ -96,6 +96,10 @@ function scheduleFlights() {
     technicalTable.innerHTML = '';
 
     let currentTime = 0;
+    let totalWaitingTime = 0;
+    let totalTurnaroundTime = 0;
+    let delayedFlights = 0;
+    let emergencyFlights = 0;
 
     flights.forEach(flight => {
         const row = scheduleTable.insertRow();
@@ -113,6 +117,17 @@ function scheduleFlights() {
         const completionTime = endTime;
         const waitingTime = startTime - flight.arrivalTime;
         const turnaroundTime = completionTime - flight.arrivalTime;
+
+        totalWaitingTime += waitingTime;
+        totalTurnaroundTime += turnaroundTime;
+
+        if (flight.typeOfFlight === 'Emergency') {
+            emergencyFlights++;
+        }
+
+        if (flight.timeSchedule.startsWith('Delayed')) {
+            delayedFlights++;
+        }
 
         const flightTypePriority = { "Emergency": 1, "International": 2, "Domestic": 3 };
         const fuelPriority = { "Low": 1, "Nominal": 2 };
@@ -136,10 +151,27 @@ function scheduleFlights() {
         techRow.insertCell(4).innerText = completionTime;
         techRow.insertCell(5).innerText = waitingTime;
         techRow.insertCell(6).innerText = turnaroundTime;
+
+        flight.waitingTime = waitingTime;
+        flight.turnaroundTime = turnaroundTime;
     });
 
+    const totalFlights = flights.length;
+    const averageWaitingTime = (totalFlights > 0) ? (totalWaitingTime / totalFlights).toFixed(2) : 0;
+    const averageTurnaroundTime = (totalFlights > 0) ? (totalTurnaroundTime / totalFlights).toFixed(2) : 0;
+
+    // Update dashboard stats
+    document.getElementById('totalFlights').innerText = totalFlights;
+    document.getElementById('delayedFlights').innerText = delayedFlights;
+    document.getElementById('emergencyFlights').innerText = emergencyFlights;
+    document.getElementById('averageResponseTime').innerText = averageWaitingTime;
+    document.getElementById('averageTurnaroundTime').innerText = averageTurnaroundTime;
+    
+    // Show dashboard container
     document.getElementById('scheduleContainer').style.display = 'block';
     document.getElementById('technicalContainer').style.display = 'block';
+    document.getElementById('dashboardContainer').style.display = 'block';
+
     // Hide Gantt chart container
     document.getElementById('ganttContainer').style.display = 'none';
 }
@@ -191,19 +223,85 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     function updateBackgroundImage() {
-        const selectedWeather = weatherSelect.options[weatherSelect.selectedIndex].value;
-        const backgroundImage = weatherImages[selectedWeather];
+        const selectedWeather = weatherSelect.value;
+        const backgroundImageUrl = weatherImages[selectedWeather];
 
-        if (backgroundImage) {
-            document.body.style.backgroundImage = `url(${backgroundImage})`;
-            document.body.style.backgroundSize = 'cover'; // Ensure the background covers the whole page
-            document.body.style.backgroundPosition = 'center'; // Center the background image
+        document.body.style.backgroundImage = `url('${backgroundImageUrl}')`; // Fix: Corrected the syntax
+    }
+
+    weatherSelect.addEventListener('change', updateBackgroundImage);
+
+    updateBackgroundImage(); // Set initial background image on page load
+});
+
+document.getElementById('backgroundToggle').addEventListener('change', function() {
+    if (this.checked) {
+        // Hide the background image
+        document.body.style.backgroundImage = 'none';
+    } else {
+        // Show the background image based on the current weather condition
+        const weatherSelect = document.getElementById('weatherSelect');
+        const weatherImages = {
+            'Fog': 'images/fog1.gif',
+            'Thunderstorms': 'images/thunderstorms.gif',
+            'Heavy Rain': 'images/heavy-rain.gif',
+            'Snow and Ice': 'images/snow-ice.gif',
+            'Nominal': 'images/nominal.gif'
+        };
+
+        function updateBackgroundImage() {
+            const selectedWeather = weatherSelect.value;
+            const backgroundImageUrl = weatherImages[selectedWeather];
+            document.body.style.backgroundImage = `url('${backgroundImageUrl}')`;
+        }
+
+        updateBackgroundImage(); // Update to current weather condition
+    }
+});
+
+document.getElementById('backgroundToggle').addEventListener('change', function() {
+    const backgroundImageUrl = document.body.getAttribute('data-background-image');
+    
+    if (this.checked) {
+        // Show the background image if toggle is on
+        document.body.style.backgroundImage = `url('${backgroundImageUrl}')`;
+        document.body.style.backgroundSize = 'cover'; // Ensure the image covers the entire background
+        document.body.style.backgroundRepeat = 'no-repeat'; // Prevent repeating of the image
+    } else {
+        // Hide the background image if toggle is off
+        document.body.style.backgroundImage = 'none';
+    }
+});
+
+// Set the initial background image and toggle state
+document.addEventListener('DOMContentLoaded', function () {
+    const weatherSelect = document.getElementById('weatherSelect');
+    const weatherImages = {
+        'Fog': 'images/fog1.gif',
+        'Thunderstorms': 'images/thunderstorms.gif',
+        'Heavy Rain': 'images/heavy-rain.gif',
+        'Snow and Ice': 'images/snow-ice.gif',
+        'Nominal': 'images/nominal.gif'
+    };
+
+    // Set initial background image based on weather selection
+    function updateBackgroundImage() {
+        const selectedWeather = weatherSelect.value;
+        const backgroundImageUrl = weatherImages[selectedWeather];
+        document.body.setAttribute('data-background-image', backgroundImageUrl);
+        if (document.getElementById('backgroundToggle').checked) {
+            document.body.style.backgroundImage = `url('${backgroundImageUrl}')`;
+            document.body.style.backgroundSize = 'cover';
+            document.body.style.backgroundRepeat = 'no-repeat';
+        } else {
+            document.body.style.backgroundImage = 'none';
         }
     }
 
-    // Set the initial background image based on the default selected weather
-    updateBackgroundImage();
+    updateBackgroundImage(); // Set initial background image on page load
 
-    // Change the background image when the user selects a different weather
-    weatherSelect.addEventListener('change', updateBackgroundImage);
+    weatherSelect.addEventListener('change', updateBackgroundImage); // Update background image when weather changes
 });
+
+
+

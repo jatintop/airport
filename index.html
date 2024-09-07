@@ -19,6 +19,14 @@
         <p>There are around 5000-7000 single-runway airports in the world.</p>
         </div>
     </div>
+
+    <div class="toggle-switch">
+        <span class="toggle-label">Enable Background Video</span>
+        <label class="switch">
+            <input type="checkbox" id="backgroundToggle" checked>
+            <span class="slider"></span>
+        </label>
+    </div>
   
     <h1>Airport Flight Scheduler</h1>
     <img src="images/airport.jpg" alt="Airport">
@@ -29,11 +37,11 @@
             <div class="custom-select-container">
                 <select id="weatherSelect" class="custom-select">
                     <option value="" disabled selected>Select Weather</option>
-                    <option value="Fog" data-icon="fa-solid fa-smog">Fog</option>
-                    <option value="Thunderstorms" data-icon="fa-bolt">Thunderstorms</option>
-                    <option value="Heavy Rain" data-icon="fa-cloud-showers-heavy">Heavy Rain</option>
-                    <option value="Snow and Ice" data-icon="fa-snowflake">Snow and Ice</option>
-                    <option value="Nominal" data-icon="fa-sun">Nominal</option>
+                    <option value="Fog" data-icon="fa-solid fa-smog">Fog (Burst Time: 11)</option>
+                    <option value="Thunderstorms" data-icon="fa-bolt">Thunderstorms (Burst Time: 9)</option>
+                    <option value="Heavy Rain" data-icon="fa-cloud-showers-heavy">Heavy Rain (Burst Time: 10)</option>
+                    <option value="Snow and Ice" data-icon="fa-snowflake">Snow and Ice (Burst Time: 12)</option>
+                    <option value="Nominal" data-icon="fa-sun">Nominal (Burst Time: 8)</option>
                 </select>
                 <div id="weatherIcon" class="weather-icon">
                     <i class="fas"></i>
@@ -254,8 +262,40 @@
             </tbody>
         </table>
     </div>
+
+<!-- Dashboard Stats -->
+<div id="dashboardContainer" style="display: none;">
+    <div class="dashboard">
+        <h4>Dashboard</h4>
+        <div class="dashboard-stats">
+            <div class="dashboard-row">
+                <span class="dashboard-label">Total Flights</span>
+                <span id="totalFlights" class="dashboard-value">0</span>
+            </div>
+            <div class="dashboard-row">
+                <span class="dashboard-label">Number of Delayed Flights</span>
+                <span id="delayedFlights" class="dashboard-value">0</span>
+            </div>
+            <div class="dashboard-row">
+                <span class="dashboard-label">Number of Emergency Flights</span>
+                <span id="emergencyFlights" class="dashboard-value">0</span>
+            </div>
+            <div class="dashboard-row">
+                <span class="dashboard-label">Average Waiting Time</span>
+                <span id="averageResponseTime" class="dashboard-value">0</span>
+            </div>
+            <div class="dashboard-row">
+                <span class="dashboard-label">Average Turnaround Time</span>
+                <span id="averageTurnaroundTime" class="dashboard-value">0</span>
+            </div>
+        </div>
+    </div>
+</div>
+   
     
     <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 
     <footer class="custom-footer">
         Designed & Developed by Jatin Topakar | Christ (Deemed to be University). All rights reserved &copy; 2024.
