@@ -1,5 +1,13 @@
-document.getElementById('scheduleButton').addEventListener('click', scheduleFlights);
-document.getElementById('setDefaultButton').addEventListener('click', setDefaultValues);
+document.addEventListener('DOMContentLoaded', function () {
+    // Event listeners
+    document.getElementById('scheduleButton').addEventListener('click', scheduleFlights);
+    document.getElementById('setDefaultButton').addEventListener('click', setDefaultValues);
+    document.getElementById('backgroundToggle').addEventListener('change', handleBackgroundToggle);
+
+    // Initialize
+    updateBackgroundImage();
+    showDialog();
+});
 
 const weatherBurstTimes = {
     'Fog': 11,
@@ -7,6 +15,14 @@ const weatherBurstTimes = {
     'Heavy Rain': 10,
     'Snow and Ice': 12,
     'Nominal': 8
+};
+
+const weatherImages = {
+    'Fog': 'images/fog1.gif',
+    'Thunderstorms': 'images/thunderstorms.gif',
+    'Heavy Rain': 'images/heavy-rain.gif',
+    'Snow and Ice': 'images/snow-ice.gif',
+    'Nominal': 'images/nominal.gif'
 };
 
 function setDefaultValues() {
@@ -33,7 +49,6 @@ function setDefaultValues() {
 function scheduleFlights() {
     const weatherSelect = document.getElementById('weatherSelect');
     const selectedWeather = weatherSelect.options[weatherSelect.selectedIndex].value;
-
     const burstTime = weatherBurstTimes[selectedWeather];
 
     if (typeof burstTime === 'undefined') {
@@ -52,6 +67,7 @@ function scheduleFlights() {
         const landingTakeoff = entry.querySelector('.landing-takeoff').value;
 
         if (typeOfFlight && fuelRequirements && timeSchedule && landingTakeoff && arrivalTime) {
+            const waitingTime = parseInt(entry.getAttribute('data-waiting-time') || '0', 10);
             flights.push({
                 flightNumber: index + 1,
                 arrivalTime: parseInt(arrivalTime, 10),
@@ -59,26 +75,26 @@ function scheduleFlights() {
                 fuelRequirements,
                 timeSchedule,
                 landingTakeoff,
-                burstTime
+                burstTime,
+                waitingTime
             });
         }
     });
 
+    // Increment waiting time for all unscheduled flights
+    flights.forEach(flight => {
+        flight.waitingTime += 1;
+    });
+
     flights.sort((a, b) => {
+        // Sort by arrival time first
         if (a.arrivalTime !== b.arrivalTime) {
             return a.arrivalTime - b.arrivalTime;
         }
 
+        // Priority calculation with aging
         const flightTypePriority = { "Emergency": 1, "International": 2, "Domestic": 3 };
-        if (flightTypePriority[a.typeOfFlight] !== flightTypePriority[b.typeOfFlight]) {
-            return flightTypePriority[a.typeOfFlight] - flightTypePriority[b.typeOfFlight];
-        }
-
         const fuelPriority = { "Low": 1, "Nominal": 2 };
-        if (fuelPriority[a.fuelRequirements] !== fuelPriority[b.fuelRequirements]) {
-            return fuelPriority[a.fuelRequirements] - fuelPriority[b.fuelRequirements];
-        }
-
         const timePriority = {
             "On time": 1,
             "Delayed < 1": 2,
@@ -86,7 +102,11 @@ function scheduleFlights() {
             "Delayed > 3": 4,
             "Delayed > 5": 5
         };
-        return timePriority[b.timeSchedule] - timePriority[a.timeSchedule];
+
+        const priorityA = flightTypePriority[a.typeOfFlight] + fuelPriority[a.fuelRequirements] + timePriority[a.timeSchedule] - a.waitingTime;
+        const priorityB = flightTypePriority[b.typeOfFlight] + fuelPriority[b.fuelRequirements] + timePriority[b.timeSchedule] - b.waitingTime;
+
+        return priorityB - priorityA;
     });
 
     const scheduleTable = document.getElementById('scheduleTable').querySelector('tbody');
@@ -129,31 +149,18 @@ function scheduleFlights() {
             delayedFlights++;
         }
 
-        const flightTypePriority = { "Emergency": 1, "International": 2, "Domestic": 3 };
-        const fuelPriority = { "Low": 1, "Nominal": 2 };
-        const timePriority = {
-            "On time": 1,
-            "Delayed < 1": 2,
-            "Delayed > 1": 3,
-            "Delayed > 3": 4,
-            "Delayed > 5": 5
-        };
-
-        const priorityScore = flightTypePriority[flight.typeOfFlight] +
-            fuelPriority[flight.fuelRequirements] +
-            timePriority[flight.timeSchedule];
-
         const techRow = technicalTable.insertRow();
         techRow.insertCell(0).innerText = flight.flightNumber;
         techRow.insertCell(1).innerText = flight.arrivalTime;
         techRow.insertCell(2).innerText = flight.burstTime;
-        techRow.insertCell(3).innerText = priorityScore;
+        techRow.insertCell(3).innerText = flight.waitingTime; // Fixed: show waitingTime instead of priorityA
         techRow.insertCell(4).innerText = completionTime;
         techRow.insertCell(5).innerText = waitingTime;
         techRow.insertCell(6).innerText = turnaroundTime;
 
-        flight.waitingTime = waitingTime;
-        flight.turnaroundTime = turnaroundTime;
+        // Update the waiting time attribute for aging
+        const entry = entries[flight.flightNumber - 1];
+        entry.setAttribute('data-waiting-time', flight.waitingTime);
     });
 
     const totalFlights = flights.length;
@@ -166,7 +173,7 @@ function scheduleFlights() {
     document.getElementById('emergencyFlights').innerText = emergencyFlights;
     document.getElementById('averageResponseTime').innerText = averageWaitingTime;
     document.getElementById('averageTurnaroundTime').innerText = averageTurnaroundTime;
-    
+
     // Show dashboard container
     document.getElementById('scheduleContainer').style.display = 'block';
     document.getElementById('technicalContainer').style.display = 'block';
@@ -174,6 +181,27 @@ function scheduleFlights() {
 
     // Hide Gantt chart container
     document.getElementById('ganttContainer').style.display = 'none';
+}
+
+function setDefaultValues() {
+    const defaultValues = [
+        { typeOfFlight: 'Domestic', fuelRequirements: 'Nominal', timeSchedule: 'On time', landingTakeoff: 'Take Off', arrivalTime: 1 },
+        { typeOfFlight: 'International', fuelRequirements: 'Low', timeSchedule: 'Delayed > 3', landingTakeoff: 'Take Off', arrivalTime: 1 },
+        { typeOfFlight: 'Emergency', fuelRequirements: 'Nominal', timeSchedule: 'On time', landingTakeoff: 'Landing', arrivalTime: 3 },
+        { typeOfFlight: 'Emergency', fuelRequirements: 'Low', timeSchedule: 'Delayed > 5', landingTakeoff: 'Landing', arrivalTime: 3 },
+        { typeOfFlight: 'International', fuelRequirements: 'Nominal', timeSchedule: 'Delayed < 1', landingTakeoff: 'Landing', arrivalTime: 4 }
+    ];
+
+    const entries = document.querySelectorAll('.flight-entry');
+
+    defaultValues.forEach((value, index) => {
+        const entry = entries[index];
+        entry.querySelector('.type-of-flight').value = value.typeOfFlight;
+        entry.querySelector('.fuel-requirements').value = value.fuelRequirements;
+        entry.querySelector('.time-schedule').value = value.timeSchedule;
+        entry.querySelector('.landing-takeoff').value = value.landingTakeoff;
+        entry.querySelector('.arrival-time').value = value.arrivalTime;
+    });
 }
 
 // Event listener for weather icon update
