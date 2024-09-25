@@ -160,7 +160,7 @@ input:focus, select:focus {
 
 .table-container {
     margin: 100px auto;
-    max-width: 1075px;
+    max-width: 1080px;
     padding: 0 20px;
 }
 
@@ -214,15 +214,7 @@ tbody tr:hover td {
     color: #1d9a8f;
 }
 
-#scheduleTable {
-    width: 100%;
-    border-collapse: collapse;
-}
 
-#scheduleTable th, #scheduleTable td {
-    border: 1px solid #ddd;
-    padding: 8px;
-}
   
 
 .hidden {
@@ -427,3 +419,22 @@ input:checked + .slider:before {
     transform: translateX(26px);
 }
 
+.chart-container {
+    width: 80%;
+    height: 900px; /* Adjust this value based on the number of flights */
+    margin: 20px auto;
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 90px;
+}
+
+.chart-container h6 {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.hidden {
+    display: none;
+}

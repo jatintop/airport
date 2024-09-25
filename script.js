@@ -46,6 +46,8 @@ function setDefaultValues() {
     });
 }
 
+let ganttChart;
+
 function scheduleFlights() {
     const weatherSelect = document.getElementById('weatherSelect');
     const selectedWeather = weatherSelect.options[weatherSelect.selectedIndex].value;
@@ -149,11 +151,24 @@ function scheduleFlights() {
             delayedFlights++;
         }
 
+        // Priority calculation for display purposes
+        const flightTypePriority = { "Emergency": 1, "International": 2, "Domestic": 3 };
+        const fuelPriority = { "Low": 1, "Nominal": 2 };
+        const timePriority = {
+            "On time": 1,
+            "Delayed < 1": 2,
+            "Delayed > 1": 3,
+            "Delayed > 3": 4,
+            "Delayed > 5": 5
+        };
+
+        const priority = flightTypePriority[flight.typeOfFlight] + fuelPriority[flight.fuelRequirements] + timePriority[flight.timeSchedule] - flight.waitingTime;
+
         const techRow = technicalTable.insertRow();
         techRow.insertCell(0).innerText = flight.flightNumber;
         techRow.insertCell(1).innerText = flight.arrivalTime;
         techRow.insertCell(2).innerText = flight.burstTime;
-        techRow.insertCell(3).innerText = flight.waitingTime; // Fixed: show waitingTime instead of priorityA
+        techRow.insertCell(3).innerText = priority; // Now showing the calculated priority
         techRow.insertCell(4).innerText = completionTime;
         techRow.insertCell(5).innerText = waitingTime;
         techRow.insertCell(6).innerText = turnaroundTime;
@@ -161,6 +176,9 @@ function scheduleFlights() {
         // Update the waiting time attribute for aging
         const entry = entries[flight.flightNumber - 1];
         entry.setAttribute('data-waiting-time', flight.waitingTime);
+
+        generateGanttChart(flights);
+        document.getElementById('ganttChartContainer').classList.remove('hidden');
     });
 
     const totalFlights = flights.length;
@@ -180,7 +198,10 @@ function scheduleFlights() {
     document.getElementById('dashboardContainer').style.display = 'block';
 
     // Hide Gantt chart container
-    document.getElementById('ganttContainer').style.display = 'none';
+    generateGanttChart(flights);
+
+    // Show the Gantt chart container
+    document.getElementById('ganttChartContainer').classList.remove('hidden');
 }
 
 function setDefaultValues() {
@@ -254,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const selectedWeather = weatherSelect.value;
         const backgroundImageUrl = weatherImages[selectedWeather];
 
-        document.body.style.backgroundImage = `url('${backgroundImageUrl}')`; // Fix: Corrected the syntax
+        document.body.style.backgroundImage = `url('${backgroundImageUrl}')`;
     }
 
     weatherSelect.addEventListener('change', updateBackgroundImage);
@@ -331,5 +352,139 @@ document.addEventListener('DOMContentLoaded', function () {
     weatherSelect.addEventListener('change', updateBackgroundImage); // Update background image when weather changes
 });
 
+function generateGanttChart(flights) {
+    const ctx = document.getElementById('ganttChart').getContext('2d');
 
+    if (ganttChart) {
+        ganttChart.destroy();
+    }
+
+    const datasets = [];
+    const colors = [
+        'rgba(255, 99, 132, 1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+    ];
+
+    flights.forEach((flight, index) => {
+        const startTime = Math.max(flight.arrivalTime, flights.slice(0, index).reduce((acc, f) => acc + f.burstTime, 0));
+        const waitTime = startTime - flight.arrivalTime;
+        const endTime = startTime + flight.burstTime;
+
+        datasets.push({
+            label: `Flight ${flight.flightNumber}`,
+            data: [
+                {
+                    x: [flight.arrivalTime, startTime],
+                    y: flight.flightNumber,
+                    type: 'wait'
+                },
+                {
+                    x: [startTime, endTime],
+                    y: flight.flightNumber,
+                    type: 'burst'
+                }
+            ],
+            backgroundColor: (context) => {
+                const type = context.raw.type;
+                return type === 'wait' ? 'rgba(200, 200, 200, 0.8)' : colors[index % colors.length];
+            },
+            barPercentage: 0.4,
+            categoryPercentage: 0.8
+        });
+    });
+
+    ganttChart = new Chart(ctx, {
+        type: 'bar',
+        data: { datasets },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    top: 0,
+                    right: 10,
+                    bottom: 55,
+                    left: 10
+                }
+            },
+            scales: {
+                x: {
+                    type: 'linear',
+                    position: 'top',
+                    title: {
+                        display: true,
+                        text: 'Time',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        padding: {
+                            top: 5,
+                            bottom: 5
+                        }
+                    },
+                    ticks: {
+                        stepSize: 1,
+                        font: {
+                            size: 12
+                        },
+                        padding: 1
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    },
+                    offset: true,
+                    beginAtZero: true
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Flight Number',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        }
+                    },
+                    ticks: {
+                        font: {
+                            size: 12
+                        },
+                        padding: 5
+                    },
+                    offset: true,
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            return `Flight ${context[0].dataset.label.split(' ')[1]}`;
+                        },
+                        label: function(context) {
+                            const type = context.raw.type;
+                            const duration = context.raw.x[1] - context.raw.x[0];
+                            
+                            if (type === 'wait') {
+                                return `Wait Time - ${duration} units`;
+                            } else {
+                                return `Burst Time - ${duration} units`;
+                            }
+                        }
+                    }
+                },
+            },
+            animation: {
+                duration: 1000,
+                easing: 'easeOutQuart'
+            }
+        }
+    });
+}
 

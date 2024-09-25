@@ -28,7 +28,7 @@
         </label>
     </div>
   
-    <h1>Airport Flight Scheduler</h1>
+    <h1>Single-Runway Airport Flight Scheduler</h1>
     <img src="images/airport.jpg" alt="Airport">
     <div class="form-container">
         <h4>Add Flight Details</h4>
@@ -261,44 +261,50 @@
 
             </tbody>
         </table>
+        <h3 style="color: white;">Note: Higher Number = Higher Priority</h3>
     </div>
 
-<!-- Dashboard Stats -->
-<div id="dashboardContainer" style="display: none;">
-    <div class="dashboard">
-        <h4>Dashboard</h4>
-        <div class="dashboard-stats">
-            <div class="dashboard-row">
-                <span class="dashboard-label">Total Flights</span>
-                <span id="totalFlights" class="dashboard-value">0</span>
-            </div>
-            <div class="dashboard-row">
-                <span class="dashboard-label">Number of Delayed Flights</span>
-                <span id="delayedFlights" class="dashboard-value">0</span>
-            </div>
-            <div class="dashboard-row">
-                <span class="dashboard-label">Number of Emergency Flights</span>
-                <span id="emergencyFlights" class="dashboard-value">0</span>
-            </div>
-            <div class="dashboard-row">
-                <span class="dashboard-label">Average Waiting Time</span>
-                <span id="averageResponseTime" class="dashboard-value">0</span>
-            </div>
-            <div class="dashboard-row">
-                <span class="dashboard-label">Average Turnaround Time</span>
-                <span id="averageTurnaroundTime" class="dashboard-value">0</span>
+    <!-- Dashboard Stats -->
+    <div id="dashboardContainer" style="display: none;">
+        <div class="dashboard">
+            <h4>Dashboard</h4>
+            <div class="dashboard-stats">
+                <div class="dashboard-row">
+                    <span class="dashboard-label">Total Flights</span>
+                    <span id="totalFlights" class="dashboard-value">0</span>
+                </div>
+                <div class="dashboard-row">
+                    <span class="dashboard-label">Number of Delayed Flights</span>
+                    <span id="delayedFlights" class="dashboard-value">0</span>
+                </div>
+                <div class="dashboard-row">
+                    <span class="dashboard-label">Number of Emergency Flights</span>
+                    <span id="emergencyFlights" class="dashboard-value">0</span>
+                </div>
+                <div class="dashboard-row">
+                    <span class="dashboard-label">Average Waiting Time</span>
+                    <span id="averageResponseTime" class="dashboard-value">0</span>
+                </div>
+                <div class="dashboard-row">
+                    <span class="dashboard-label">Average Turnaround Time</span>
+                    <span id="averageTurnaroundTime" class="dashboard-value">0</span>
+                </div>
             </div>
         </div>
     </div>
-</div>
-   
+
+    <div id="ganttChartContainer" class="chart-container hidden">
+        <h4>Gantt Chart of Flight Schedule</h4>
+        <canvas id="ganttChart"></canvas>
+    </div>
     
     <script src="script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
 
 
     <footer class="custom-footer">
-        Designed & Developed by Jatin Topakar | Christ (Deemed to be University). All rights reserved &copy; 2024.
+        Designed & Developed by Jatin Topakar | Christ (Deemed to be University)
     </footer>    
 </body>
 </html>
