@@ -17,6 +17,7 @@ body {
 #weatherSelect {
     margin-top: 5px;
     margin-right: 10px; 
+    width: 100%;
 }
 
 .button-container {
