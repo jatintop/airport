@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flight Scheduler</title>
+    <title>Airport Scheduler</title>
     <link rel="icon" href="images/favicon1.png" type="image/png">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -43,11 +43,14 @@
                     <option value="Snow and Ice" data-icon="fa-snowflake">Snow and Ice (Burst Time: 12)</option>
                     <option value="Nominal" data-icon="fa-sun">Nominal (Burst Time: 8)</option>
                 </select>
+                <div class="select-arrow"></div>
                 <div id="weatherIcon" class="weather-icon">
                     <i class="fas"></i>
                 </div>
             </div>
-            <button id="setDefaultButton" type="button">Automatically Enter Values</button>
+            <div class="button-container">
+                <button id="setDefaultButton" type="button">Click Here to Automatically Enter Values</button>
+            </div>
 
             <div class="flight-entry">
                 <h3>Flight 1</h3>            

@@ -15,23 +15,45 @@ body {
 }
 
 #weatherSelect {
+    margin-top: 5px;
     margin-right: 10px; 
 }
 
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px; /* Adjust as needed */
+}
+
 #setDefaultButton {
-    margin-left: 405px; 
     padding: 12px;
     font-size: 14px;
     cursor: pointer;
     background-color: #25a18e;
     color: white;
+    margin-bottom: 10px;
     height: 50px;
+    width: 100%;
     border: none;
     border-radius: 4px;
+    transition: background-color 0.3s ease;
 }
 
 #setDefaultButton:hover {
-    background-color: #166854;
+        background-color: #166854;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(37, 161, 142, 0.3);
+}
+
+/* Add media query for responsiveness */
+@media (max-width: 600px) {
+    .button-container {
+        justify-content: center;
+    }
+    
+    #setDefaultButton {
+        width: 100%;
+    }
 }
 
 h1 {
@@ -88,7 +110,7 @@ img {
     border-radius: 30px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    margin-bottom: 100px;
+    margin-bottom: 35px;
     padding-bottom: 60px;
 }
 
@@ -158,16 +180,12 @@ input:focus, select:focus {
     box-shadow: 0 6px 12px rgba(37, 161, 142, 0.3);
 }
 
-.table-container {
-    margin: 100px auto;
-    max-width: 1080px;
-    padding: 0 20px;
-}
-
+.table-container,
 .table-container2 {
-    margin: 100px auto;
+    margin: 20px auto;
     max-width: 1080px;
     padding: 0 20px;
+    overflow-x: auto;
 }
 
 table {
@@ -177,6 +195,46 @@ table {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     overflow: hidden;
+}
+
+@media screen and (max-width: 600px) {
+    table {
+        font-size: 14px;
+    }
+
+    table th,
+    table td {
+        padding: 8px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .table-container,
+    .table-container2 {
+        padding: 0 10px;
+    }
+
+    table {
+        font-size: 12px;
+    }
+
+    table th,
+    table td {
+        padding: 6px;
+    }
+}
+
+/* For tables with many columns */
+@media screen and (max-width: 768px) {
+    .table-container,
+    .table-container2 {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+        min-width: 600px; /* Adjust based on your table's content */
+    }
 }
 
 table, th, td {
@@ -225,7 +283,7 @@ tbody tr:hover td {
 .custom-select-container {
     position: relative;
     display: inline-block;
-    width: 280px; 
+    width: 100%; 
 }
 
 .custom-select {
@@ -266,28 +324,61 @@ tbody tr:hover td {
     font-size: 14px;
     bottom: 0;
     width: 100%;
-    margin-top: 60px;
     height: 50px;
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
 }
 #dashboardContainer {
     display: flex;
     justify-content: center;
-    margin-left: 250px;
-    margin-bottom: 80px;
-    align-items: center; /* Vertically centers the container */
+    align-items: center;
     padding: 20px;
-    box-sizing: border-box; /* Ensure padding is included in the element's total width and height */
+    margin-top: 35px;
+    box-sizing: border-box;
+    transition: margin-left 0.3s ease;
 }
-
 
 .dashboard {
     width: 100%;
-    max-width: 800px; /* Adjust the max width as needed */
-    background-color: #ffffff; /* Background color */
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    max-width: 800px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 20px;
+}
+
+/* Responsive styles */
+@media screen and (min-width: 1024px) {
+    #dashboardContainer {
+        margin-left: 250px;
+        margin-bottom: 80px;
+    }
+}
+
+@media screen and (max-width: 1023px) {
+    #dashboardContainer {
+        margin-left: 0;
+        margin-bottom: 60px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    #dashboardContainer {
+        padding: 15px;
+    }
+
+    .dashboard {
+        padding: 15px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    #dashboardContainer {
+        padding: 10px;
+    }
+
+    .dashboard {
+        padding: 10px;
+    }
 }
 
 .dashboard h2 {
@@ -428,7 +519,7 @@ input:checked + .slider:before {
     padding: 40px;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 10px;
+    margin-bottom: 90px;
 }
 
 .chart-container h6 {
