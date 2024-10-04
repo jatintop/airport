@@ -48,6 +48,22 @@ function setDefaultValues() {
 
 let ganttChart;
 
+function calculatePriority(flight) {
+    const flightTypePriority = { "Emergency": 3, "International": 2, "Domestic": 1 };
+    const fuelPriority = { "Low": 2, "Nominal": 1 };
+    const timePriority = {
+        "On time": 1,
+        "Delayed < 1": 2,
+        "Delayed > 1": 3,
+        "Delayed > 3": 4,
+        "Delayed > 5": 5
+    };
+
+    return (flightTypePriority[flight.typeOfFlight] * 100) + 
+           (fuelPriority[flight.fuelRequirements] * 10) + 
+           timePriority[flight.timeSchedule];
+}
+
 function scheduleFlights() {
     const weatherSelect = document.getElementById('weatherSelect');
     const selectedWeather = weatherSelect.options[weatherSelect.selectedIndex].value;
@@ -62,146 +78,171 @@ function scheduleFlights() {
     const entries = document.querySelectorAll('.flight-entry');
 
     entries.forEach((entry, index) => {
-        const arrivalTime = entry.querySelector('.arrival-time').value;
+        const arrivalTime = parseInt(entry.querySelector('.arrival-time').value, 10);
         const typeOfFlight = entry.querySelector('.type-of-flight').value;
         const fuelRequirements = entry.querySelector('.fuel-requirements').value;
         const timeSchedule = entry.querySelector('.time-schedule').value;
         const landingTakeoff = entry.querySelector('.landing-takeoff').value;
 
         if (typeOfFlight && fuelRequirements && timeSchedule && landingTakeoff && arrivalTime) {
-            const waitingTime = parseInt(entry.getAttribute('data-waiting-time') || '0', 10);
             flights.push({
                 flightNumber: index + 1,
-                arrivalTime: parseInt(arrivalTime, 10),
+                arrivalTime,
                 typeOfFlight,
                 fuelRequirements,
                 timeSchedule,
                 landingTakeoff,
                 burstTime,
-                waitingTime
+                priority: calculatePriority({
+                    typeOfFlight,
+                    fuelRequirements,
+                    timeSchedule
+                })
             });
         }
     });
 
-    // Increment waiting time for all unscheduled flights
-    flights.forEach(flight => {
-        flight.waitingTime += 1;
-    });
+    let currentTime = 1; // Start at time 1
+    let scheduledFlights = [];
+    let remainingFlights = [...flights];
 
-    flights.sort((a, b) => {
-        // Sort by arrival time first
-        if (a.arrivalTime !== b.arrivalTime) {
-            return a.arrivalTime - b.arrivalTime;
+    // First, handle all flights with arrival time 1
+    let arrivalTime1Flights = remainingFlights.filter(flight => flight.arrivalTime === 1);
+    
+    if (arrivalTime1Flights.length > 0) {
+        // Sort arrival time 1 flights by priority
+        arrivalTime1Flights.sort((a, b) => b.priority - a.priority);
+        
+        // Schedule the first flight (highest priority among arrival time 1)
+        const firstFlight = arrivalTime1Flights[0];
+        scheduledFlights.push({
+            ...firstFlight,
+            startTime: currentTime,
+            completionTime: currentTime + firstFlight.burstTime
+        });
+        
+        // Update current time and remove scheduled flight
+        currentTime += firstFlight.burstTime;
+        remainingFlights = remainingFlights.filter(f => f.flightNumber !== firstFlight.flightNumber);
+        
+        // Handle remaining arrival time 1 flights along with others
+        while (remainingFlights.length > 0) {
+            // Find all flights that have arrived by the current time
+            const availableFlights = remainingFlights.filter(flight => 
+                flight.arrivalTime <= currentTime
+            );
+
+            if (availableFlights.length === 0) {
+                // If no flights are available, jump to the next arrival time
+                currentTime = Math.min(...remainingFlights.map(f => f.arrivalTime));
+                continue;
+            }
+
+            // Sort available flights by priority
+            availableFlights.sort((a, b) => b.priority - a.priority);
+
+            // Schedule the highest priority flight
+            const selectedFlight = availableFlights[0];
+            scheduledFlights.push({
+                ...selectedFlight,
+                startTime: currentTime,
+                completionTime: currentTime + selectedFlight.burstTime
+            });
+
+            // Remove the scheduled flight from remaining flights
+            remainingFlights = remainingFlights.filter(f => f.flightNumber !== selectedFlight.flightNumber);
+
+            // Update current time
+            currentTime += selectedFlight.burstTime;
         }
+    } else {
+        // If no flights at time 1, start with the earliest arrival time
+        currentTime = Math.min(...remainingFlights.map(f => f.arrivalTime));
+        
+        while (remainingFlights.length > 0) {
+            const availableFlights = remainingFlights.filter(flight => 
+                flight.arrivalTime <= currentTime
+            );
 
-        // Priority calculation with aging
-        const flightTypePriority = { "Emergency": 1, "International": 2, "Domestic": 3 };
-        const fuelPriority = { "Low": 1, "Nominal": 2 };
-        const timePriority = {
-            "On time": 1,
-            "Delayed < 1": 2,
-            "Delayed > 1": 3,
-            "Delayed > 3": 4,
-            "Delayed > 5": 5
-        };
+            if (availableFlights.length === 0) {
+                currentTime = Math.min(...remainingFlights.map(f => f.arrivalTime));
+                continue;
+            }
 
-        const priorityA = flightTypePriority[a.typeOfFlight] + fuelPriority[a.fuelRequirements] + timePriority[a.timeSchedule] - a.waitingTime;
-        const priorityB = flightTypePriority[b.typeOfFlight] + fuelPriority[b.fuelRequirements] + timePriority[b.timeSchedule] - b.waitingTime;
+            availableFlights.sort((a, b) => b.priority - a.priority);
 
-        return priorityB - priorityA;
-    });
+            const selectedFlight = availableFlights[0];
+            scheduledFlights.push({
+                ...selectedFlight,
+                startTime: currentTime,
+                completionTime: currentTime + selectedFlight.burstTime
+            });
 
+            remainingFlights = remainingFlights.filter(f => f.flightNumber !== selectedFlight.flightNumber);
+            currentTime += selectedFlight.burstTime;
+        }
+    }
+
+    // Update tables and visualizations
+    updateTables(scheduledFlights);
+    updateDashboard(scheduledFlights);
+    generateGanttChart(scheduledFlights);
+
+    // Show containers
+    document.getElementById('scheduleContainer').style.display = 'block';
+    document.getElementById('technicalContainer').style.display = 'block';
+    document.getElementById('dashboardContainer').style.display = 'block';
+    document.getElementById('ganttChartContainer').classList.remove('hidden');
+}
+
+// [Rest of the code remains the same as in the previous version]
+function updateTables(scheduledFlights) {
     const scheduleTable = document.getElementById('scheduleTable').querySelector('tbody');
     const technicalTable = document.getElementById('technicalTable').querySelector('tbody');
 
     scheduleTable.innerHTML = '';
     technicalTable.innerHTML = '';
 
-    let currentTime = 0;
-    let totalWaitingTime = 0;
-    let totalTurnaroundTime = 0;
-    let delayedFlights = 0;
-    let emergencyFlights = 0;
+    scheduledFlights.forEach(flight => {
+        // Update Schedule Table
+        const scheduleRow = scheduleTable.insertRow();
+        scheduleRow.insertCell(0).innerText = `Flight ${flight.flightNumber}`;
+        scheduleRow.insertCell(1).innerText = flight.arrivalTime;
+        scheduleRow.insertCell(2).innerText = flight.typeOfFlight;
+        scheduleRow.insertCell(3).innerText = flight.fuelRequirements;
+        scheduleRow.insertCell(4).innerText = flight.timeSchedule;
+        scheduleRow.insertCell(5).innerText = flight.landingTakeoff;
 
-    flights.forEach(flight => {
-        const row = scheduleTable.insertRow();
-        row.insertCell(0).innerText = `Flight ${flight.flightNumber}`;
-        row.insertCell(1).innerText = flight.arrivalTime;
-        row.insertCell(2).innerText = flight.typeOfFlight;
-        row.insertCell(3).innerText = flight.fuelRequirements;
-        row.insertCell(4).innerText = flight.timeSchedule;
-        row.insertCell(5).innerText = flight.landingTakeoff;
-
-        const startTime = Math.max(currentTime, flight.arrivalTime);
-        const endTime = startTime + flight.burstTime;
-        currentTime = endTime;
-
-        const completionTime = endTime;
-        const waitingTime = startTime - flight.arrivalTime;
-        const turnaroundTime = completionTime - flight.arrivalTime;
-
-        totalWaitingTime += waitingTime;
-        totalTurnaroundTime += turnaroundTime;
-
-        if (flight.typeOfFlight === 'Emergency') {
-            emergencyFlights++;
-        }
-
-        if (flight.timeSchedule.startsWith('Delayed')) {
-            delayedFlights++;
-        }
-
-        // Priority calculation for display purposes
-        const flightTypePriority = { "Emergency": 1, "International": 2, "Domestic": 3 };
-        const fuelPriority = { "Low": 1, "Nominal": 2 };
-        const timePriority = {
-            "On time": 1,
-            "Delayed < 1": 2,
-            "Delayed > 1": 3,
-            "Delayed > 3": 4,
-            "Delayed > 5": 5
-        };
-
-        const priority = flightTypePriority[flight.typeOfFlight] + fuelPriority[flight.fuelRequirements] + timePriority[flight.timeSchedule] - flight.waitingTime;
+        // Update Technical Table
+        const waitingTime = flight.startTime - flight.arrivalTime;
+        const turnaroundTime = flight.completionTime - flight.arrivalTime;
 
         const techRow = technicalTable.insertRow();
         techRow.insertCell(0).innerText = flight.flightNumber;
         techRow.insertCell(1).innerText = flight.arrivalTime;
         techRow.insertCell(2).innerText = flight.burstTime;
-        techRow.insertCell(3).innerText = priority; // Now showing the calculated priority
-        techRow.insertCell(4).innerText = completionTime;
+        techRow.insertCell(3).innerText = flight.priority;
+        techRow.insertCell(4).innerText = flight.completionTime;
         techRow.insertCell(5).innerText = waitingTime;
         techRow.insertCell(6).innerText = turnaroundTime;
-
-        // Update the waiting time attribute for aging
-        const entry = entries[flight.flightNumber - 1];
-        entry.setAttribute('data-waiting-time', flight.waitingTime);
-
-        generateGanttChart(flights);
-        document.getElementById('ganttChartContainer').classList.remove('hidden');
     });
+}
 
-    const totalFlights = flights.length;
-    const averageWaitingTime = (totalFlights > 0) ? (totalWaitingTime / totalFlights).toFixed(2) : 0;
-    const averageTurnaroundTime = (totalFlights > 0) ? (totalTurnaroundTime / totalFlights).toFixed(2) : 0;
+function updateDashboard(scheduledFlights) {
+    const totalFlights = scheduledFlights.length;
+    const delayedFlights = scheduledFlights.filter(f => f.timeSchedule.startsWith('Delayed')).length;
+    const emergencyFlights = scheduledFlights.filter(f => f.typeOfFlight === 'Emergency').length;
+    
+    const totalWaitingTime = scheduledFlights.reduce((sum, flight) => 
+        sum + (flight.startTime - flight.arrivalTime), 0);
+    const totalTurnaroundTime = scheduledFlights.reduce((sum, flight) => 
+        sum + (flight.completionTime - flight.arrivalTime), 0);
 
-    // Update dashboard stats
     document.getElementById('totalFlights').innerText = totalFlights;
     document.getElementById('delayedFlights').innerText = delayedFlights;
     document.getElementById('emergencyFlights').innerText = emergencyFlights;
-    document.getElementById('averageResponseTime').innerText = averageWaitingTime;
-    document.getElementById('averageTurnaroundTime').innerText = averageTurnaroundTime;
-
-    // Show dashboard container
-    document.getElementById('scheduleContainer').style.display = 'block';
-    document.getElementById('technicalContainer').style.display = 'block';
-    document.getElementById('dashboardContainer').style.display = 'block';
-
-    // Hide Gantt chart container
-    generateGanttChart(flights);
-
-    // Show the Gantt chart container
-    document.getElementById('ganttChartContainer').classList.remove('hidden');
+    document.getElementById('averageResponseTime').innerText = (totalWaitingTime / totalFlights).toFixed(2);
+    document.getElementById('averageTurnaroundTime').innerText = (totalTurnaroundTime / totalFlights).toFixed(2);
 }
 
 function setDefaultValues() {
@@ -369,20 +410,16 @@ function generateGanttChart(flights) {
     ];
 
     flights.forEach((flight, index) => {
-        const startTime = Math.max(flight.arrivalTime, flights.slice(0, index).reduce((acc, f) => acc + f.burstTime, 0));
-        const waitTime = startTime - flight.arrivalTime;
-        const endTime = startTime + flight.burstTime;
-
         datasets.push({
             label: `Flight ${flight.flightNumber}`,
             data: [
                 {
-                    x: [flight.arrivalTime, startTime],
+                    x: [flight.arrivalTime, flight.startTime],
                     y: flight.flightNumber,
                     type: 'wait'
                 },
                 {
-                    x: [startTime, endTime],
+                    x: [flight.startTime, flight.completionTime],
                     y: flight.flightNumber,
                     type: 'burst'
                 }
@@ -470,15 +507,12 @@ function generateGanttChart(flights) {
                         label: function(context) {
                             const type = context.raw.type;
                             const duration = context.raw.x[1] - context.raw.x[0];
-                            
-                            if (type === 'wait') {
-                                return `Wait Time - ${duration} units`;
-                            } else {
-                                return `Burst Time - ${duration} units`;
-                            }
+                            return type === 'wait' ? 
+                                `Wait Time - ${duration} units` : 
+                                `Burst Time - ${duration} units`;
                         }
                     }
-                },
+                }
             },
             animation: {
                 duration: 1000,
