@@ -316,10 +316,11 @@ tbody tr:hover td {
 
 .custom-footer {
     background-color: #166854; 
-    color: #ffffff;
+    
     text-align: center;
     padding: 10px 0;
     align-content: center;
+    color: #ffffff;
     font-family: 'Roboto', sans-serif; 
     font-size: 14px;
     bottom: 0;
@@ -530,4 +531,15 @@ input:checked + .slider:before {
 
 .hidden {
     display: none;
+}
+
+a{
+    color: #00ddff;
+    font-family: 'Roboto', sans-serif; 
+    font-size: 14px;
+}
+a:hover{
+    color: #0b2d65;
+    font-family: 'Roboto', sans-serif; 
+    font-size: 14px;
 }
